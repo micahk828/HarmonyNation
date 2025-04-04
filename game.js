@@ -97,7 +97,7 @@ function loadGameAssets() {
     gameAnimations.city.src = sprites.buildings[0].src;
   });
 }
-
+/*
 function initializeGameSprites() {
   // Create clouds
   for (let i = 0; i < 3; i++) {
@@ -114,7 +114,7 @@ function initializeGameSprites() {
     gameAnimations.resourceIcons[resource] = new ResourceIcon(x, y, sprite);
   });
 }
-
+*/
 // Initialize the game
 async function initGame() {
   try {
@@ -196,7 +196,7 @@ function createGameInterface() {
     <h1>HarmonyNation</h1>
     <div class="level-info">
       <span>Level: <span id="level">1</span></span>
-      <span>Wealth: <span id="wealth">0</span></span>
+      <!--<span>Wealth: <span id="wealth">0</span></span>-->
       <span>Day: <span id="day">1</span>/<span id="days-per-level">${DAYS_PER_LEVEL}</span></span>
     </div>
   `;
