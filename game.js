@@ -401,7 +401,7 @@ function createGameInterface() {
 function storeElementReferences() {
   elements = {
     level: document.getElementById('level'),
-    wealth: document.getElementById('wealth'),
+    //wealth: document.getElementById('wealth'),
     day: document.getElementById('day'),
     food: {
       bar: document.getElementById('food-bar'),
@@ -716,7 +716,7 @@ function addGameStyles() {
 function updateDisplay() {
   // Update basic info
   elements.level.textContent = gameState.level;
-  elements.wealth.textContent = gameState.wealth;
+  //elements.wealth.textContent = gameState.wealth;
   elements.day.textContent = gameState.day;
 
   // Show/hide next day button based on tasks completion
