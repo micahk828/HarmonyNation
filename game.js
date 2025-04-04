@@ -196,7 +196,7 @@ function createGameInterface() {
     <h1>HarmonyNation</h1>
     <div class="level-info">
       <span>Level: <span id="level">1</span></span>
-      
+      <span>Wealth: <span id="wealth">0</span></span>
       <span>Day: <span id="day">1</span>/<span id="days-per-level">${DAYS_PER_LEVEL}</span></span>
     </div>
   `;
