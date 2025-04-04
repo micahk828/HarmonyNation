@@ -97,7 +97,7 @@ function loadGameAssets() {
     gameAnimations.city.src = sprites.buildings[0].src;
   });
 }
-/*
+
 function initializeGameSprites() {
   // Create clouds
   for (let i = 0; i < 3; i++) {
@@ -114,7 +114,7 @@ function initializeGameSprites() {
     gameAnimations.resourceIcons[resource] = new ResourceIcon(x, y, sprite);
   });
 }
-*/
+
 // Initialize the game
 async function initGame() {
   try {
