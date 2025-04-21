@@ -106,13 +106,6 @@ function initializeGameSprites() {
     const y = Math.random() * (window.innerHeight * 0.2);
     gameAnimations.clouds.push(new Cloud(x, y, cloudSprite));
   }
-
-  // Create resource icons
-  Object.entries(sprites.resources).forEach(([resource, sprite], index) => {
-    const x = (window.innerWidth / 5) * (index + 1);
-    const y = 20;
-    gameAnimations.resourceIcons[resource] = new ResourceIcon(x, y, sprite);
-  });
 }
 
 // Initialize the game
@@ -164,18 +157,14 @@ function setupCanvas() {
 
     ctx.drawImage(gameAnimations.city, cityX, cityY, cityWidth, cityHeight);
 
-    // Update and draw resource icons with animations
-    Object.entries(gameAnimations.resourceIcons).forEach(([resource, icon], index) => {
-      icon.update();
-      icon.draw(ctx);
-
-      // Draw resource values
-      ctx.font = '16px Arial';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.fillText(Math.round(gameState.resources[resource]),
-                  icon.x + icon.sprite.width/2,
-                  icon.y + icon.sprite.height + 20);
+    // Draw resource values directly
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'left';
+    Object.entries(gameState.resources).forEach((resource, index) => {
+      const x = (canvas.width / 5) * (index + 1);
+      const y = 30;
+      ctx.fillText(`${resource[0]}: ${Math.round(resource[1])}`, x, y);
     });
 
     requestAnimationFrame(animate);
@@ -196,7 +185,7 @@ function createGameInterface() {
     <h1>HarmonyNation</h1>
     <div class="level-info">
       <span>Level: <span id="level">1</span></span>
-      
+
       <span>Day: <span id="day">1</span>/<span id="days-per-level">${DAYS_PER_LEVEL}</span></span>
     </div>
   `;
@@ -372,6 +361,17 @@ function createGameInterface() {
   `;
   gameArea.appendChild(actionsPanel);
 
+  // Add character feedback section
+  const characterFeedback = document.createElement('div');
+  characterFeedback.className = 'panel character-feedback';
+  characterFeedback.innerHTML = `
+    <h2>Character Feedback</h2>
+    <img id="character-image" src="content.png" alt="Character Emotion" width="128" height="256">
+    <p id="character-message"></p>
+  `;
+  gameArea.appendChild(characterFeedback);
+
+
   // Add game area to container
   gameContainer.appendChild(gameArea);
 
@@ -469,7 +469,9 @@ function storeElementReferences() {
     investHealthcare: document.getElementById('invest-healthcare'),
     investDiplomacy: document.getElementById('invest-diplomacy'),
     distributeFood: document.getElementById('distribute-food'),
-    trade: document.getElementById('trade')
+    trade: document.getElementById('trade'),
+    characterImage: document.getElementById('character-image'),
+    characterMessage: document.getElementById('character-message')
   };
 }
 
@@ -699,6 +701,15 @@ function addGameStyles() {
       margin-top: 15px;
     }
 
+    .character-feedback {
+      grid-column: span 2; /* Added to make it span across two columns */
+      text-align: center;
+    }
+
+    .character-feedback img {
+      display: block;
+      margin: 0 auto 10px auto;
+    }
     @media (max-width: 768px) {
       .game-area {
         grid-template-columns: 1fr;
@@ -706,6 +717,9 @@ function addGameStyles() {
 
       .action-buttons {
         grid-template-columns: 1fr;
+      }
+      .character-feedback {
+        grid-column: span 1; /* Adjust for smaller screens */
       }
     }
   `;
@@ -756,7 +770,7 @@ function updateDisplay() {
 
   // Update buttons based on available wealth
   updateActionButtons();
-  
+
   // Update task list
   const taskList = document.querySelector('#task-list ul');
   const taskProgress = document.getElementById('task-progress');
@@ -766,6 +780,9 @@ function updateDisplay() {
     ).join('');
     taskProgress.textContent = `${gameState.dailyTasks.completed}/${gameState.dailyTasks.required + ((gameState.level - 1) * gameState.dailyTasks.levelModifier)}`;
   }
+
+  // Update character feedback
+  updateCharacterFeedback();
 }
 
 // Update a single progress bar
@@ -783,6 +800,36 @@ function updateActionButtons() {
   elements.investHealthcare.disabled = gameState.wealth < 15;
   elements.investDiplomacy.disabled = gameState.wealth < 15;
   elements.distributeFood.disabled = gameState.resources.food < 10;
+}
+
+// Update character feedback
+function updateCharacterFeedback() {
+  const characterImage = elements.characterImage;
+  const characterMessage = elements.characterMessage;
+
+  // Check various conditions to determine feedback
+  if (gameState.resources.food < 20) {
+    characterImage.src = 'anxious.png';
+    characterMessage.textContent = "Our food supplies are dangerously low! We need to focus on agriculture before people start going hungry.";
+  } else if (gameState.metrics.diplomacy > 80) {
+    characterImage.src = 'content.png';
+    characterMessage.textContent = "Trade is flourishing! Perfect time to strengthen our economic partnerships.";
+  } else if (gameState.metrics.infrastructure < 30) {
+    characterImage.src = 'frustrated.png';
+    characterMessage.textContent = "These working conditions are unacceptable! Infrastructure improvements can't wait any longer.";
+  } else if (gameState.metrics.education > 70) {
+    characterImage.src = 'excited.png';
+    characterMessage.textContent = "We're on the verge of a breakthrough! Just a little more investment in education could change everything!";
+  } else if (gameState.metrics.harmony < 30) {
+    characterImage.src = 'panicked.png';
+    characterMessage.textContent = "Harmony is breaking down! We need immediate action before civil unrest spreads!";
+  } else if (gameState.metrics.healthcare < 40) {
+    characterImage.src = 'concerned.png';
+    characterMessage.textContent = "The people's health is suffering. We must improve healthcare services before an epidemic strikes.";
+  } else if (gameState.metrics.harmony > 80) {
+    characterImage.src = 'hopeful.png';
+    characterMessage.textContent = "The harmony is strong! The perfect time to plan for our nation's future generations!";
+  }
 }
 
 // Start the game loop
@@ -877,8 +924,7 @@ function processResources() {
   if (gameState.resources.food <= 0) {
     gameState.resources.food = 0;
     const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.style.backgroundColor = 'rgba(244, 67, 54, 0.95)';
+    modal.className = 'modal';modal.style.backgroundColor = 'rgba(244, 67, 54, 0.95)';
 
     const modalContent = document.createElement('div');
     modalContent.className = 'modal-content';
@@ -938,7 +984,7 @@ function investInSector(sector) {
 
   if (gameState.wealth < cost) return;
 
-  gameState.wealth -= cost;
+  gameState.resources.wealth -= cost;
   gameState.dailyTasks.completed++;
   elements.statusMessage.textContent = `Task completed! (${gameState.dailyTasks.completed}/${gameState.dailyTasks.required})`;
   gameState.metrics[sector] += 5;
@@ -1555,7 +1601,6 @@ function resetGame() {
       scholars: { satisfaction: 50, influence: 0.5 }
     },
     level: 1,
-    wealth: 0,
     day: 1,
     events: [],
     activeEvent: null,
