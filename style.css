@@ -9,9 +9,58 @@ html {
   display: block;
   background-image: url('HarmonyNation.png');
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: 100% 100%;
+  background-attachment: scroll;
+  background-size: 100% 30vh;
+  background-position: center;
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.panel h2 {
+  margin-top: 0;
+  color: #3a7ca5;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.character-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.character-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.character-feedback img {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  max-width: 128px;
+  height: auto;
+  object-fit: contain;
+}
+
+.character-message {
+  font-size: 1.1em;
+  color: #444;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.game-area {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, auto);
+  gap: 20px;
+  padding: 20px;
+}
+
+.character-feedback {
+  grid-column: 3; /* Moved to the third column */
+  grid-row: 1 / span 3; /* Occupies all rows */
 }
